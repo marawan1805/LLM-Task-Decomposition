@@ -29,3 +29,7 @@ Initiate the planning tool with python src/main.py, inputting initial conditions
 Frontend:
 
 Navigate to the frontend folder (cd src/frontend) and launch it (npm start).
+
+Credits:
+Chatgpt
+Daemonib
