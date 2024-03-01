@@ -74,7 +74,6 @@ def main():
     server_thread.start()
     print("Starting planning with the initial goal task:", goal_task)
 
-    # Note: I've just used the htn_planner part as an example. You can keep the other parts if needed.
     htn_planner = HTNPlanner(goal_input, initial_state_input, goal_task, compressed_capabilities, 5, send_task_node_update)
     plan = htn_planner.htn_planning()
 

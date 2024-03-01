@@ -8,7 +8,6 @@ from task_node import TaskNode
 from text_utils import extract_lists, trace_function_calls
 from guidance_prompts import htn_prompts
 from vector_db import VectorDB
-import threading
 
 class HTNPlanner:
     def __init__(self, goal_input, initial_state, goal_task, capabilities_input, max_depth=5, send_update_callback=None):

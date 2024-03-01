@@ -4,7 +4,6 @@ import time
 
 import openai
 from ratelimiter import RateLimiter
-import guidance
 
 openai.api_key = os.environ.get('OPENAI_KEY')
 

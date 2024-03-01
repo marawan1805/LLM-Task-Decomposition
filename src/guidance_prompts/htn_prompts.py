@@ -56,8 +56,6 @@ def evaluate_candidate(goal_input, task, subtasks, capabilities_input):
     return result['score'] if 'score' in result else result['Score']
 
 def check_subtasks(task, subtasks, capabilities_input):
-    task_statuses = ['True', 'False']
-
     check_subtasks_program = guidance('''
     {{#system~}}
     You are a helpful assistant.
@@ -69,10 +67,10 @@ def check_subtasks(task, subtasks, capabilities_input):
     '{{capabilities_input}}'. Return 'True' if they meet the requirements or 'False' otherwise.
     {{~/user}}
     {{#assistant~}}
-    {{select "result" options=task_statuses}}
+    {{gen "result"}}
     {{~/assistant}}''', llm=guidance_gpt4_api)
 
-    response = check_subtasks_program(task=task, subtasks=subtasks, capabilities_input=capabilities_input, task_statuses=task_statuses)
+    response = check_subtasks_program(task=task, subtasks=subtasks, capabilities_input=capabilities_input)
     result = response["result"].strip().lower()
 
     return result
