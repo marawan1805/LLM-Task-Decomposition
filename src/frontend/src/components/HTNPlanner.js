@@ -9,11 +9,18 @@ function HTNPlanner() {
   const [expandedNodes, setExpandedNodes] = useState({}); // To handle node expansion
 
   useEffect(() => {
-    const newSocket = io('http://localhost:5000');
+    const newSocket = io('http://127.0.0.1:5000');
     setSocket(newSocket);
 
+    newSocket.on('connect', () => {
+      console.log('Socket connected');
+    });
+
     newSocket.on('task_node_update', (data) => {
+      console.log('Received task_node_update:', data);
       setTaskNode(data);
+      // Expand the root node by default
+      setExpandedNodes(prev => ({ ...prev, [data.task_name]: true }));
     });
 
     return () => newSocket.close();
@@ -22,7 +29,7 @@ function HTNPlanner() {
   const handleToggle = (node) => {
     setExpandedNodes(prev => ({
       ...prev,
-      [node.node_name]: !prev[node.node_name]
+      [node.task_name]: !prev[node.task_name]
     }));
   };
 
@@ -47,12 +54,12 @@ function HTNPlanner() {
           <ListItemText primary={`${node.task_name} (${node.status})`} />
           {node.children.length > 0 && (
             <IconButton edge="end" onClick={() => handleToggle(node)}>
-              {expandedNodes[node.node_name] ? <ExpandLess /> : <ExpandMore />}
+              {expandedNodes[node.task_name] ? <ExpandLess /> : <ExpandMore />}
             </IconButton>
           )}
         </ListItem>
-        <Collapse in={expandedNodes[node.node_name]} timeout="auto" unmountOnExit>
-          {node.children.map((child) => renderTaskNode(child, depth + 1))}
+        <Collapse in={expandedNodes[node.task_name]} timeout="auto" unmountOnExit>
+          {node.children.map((child, index) => renderTaskNode(child, depth + 1))}
         </Collapse>
       </List>
     );
@@ -64,7 +71,7 @@ function HTNPlanner() {
         HTN Planner Visualization
       </Typography>
       <Paper style={{ width: '80%', padding: 20, overflow: 'hidden' }}>
-        {renderTaskNode(taskNode)}
+        {taskNode ? renderTaskNode(taskNode) : <Typography>Waiting for data...</Typography>}
       </Paper>
     </div>
   );

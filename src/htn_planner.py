@@ -1,9 +1,9 @@
-# An implementation of HTN using the GPT-4 API
+# An implementation of HTN using a LLM API
 # Due to the expressiveness of language, a lot of steps that would generally require complex functions are left up
 # to the LLM
 
-from gpt4_utils import gpt4_is_goal, is_task_primitive, can_execute, log_state_change
-from openai_api import call_openai_api, log_response
+from LLM_utils import groq_is_goal, is_task_primitive, can_execute, log_state_change
+from LLM_api import call_groq_api, log_response
 from task_node import TaskNode
 from text_utils import extract_lists, trace_function_calls
 from guidance_prompts import htn_prompts
@@ -51,7 +51,7 @@ class HTNPlanner:
 
     @trace_function_calls
     def htn_planning_recursive(self, state, goal_task, root_node, max_depth, capabilities_input, db, send_update_callback=None):
-        if gpt4_is_goal(state, goal_task):
+        if groq_is_goal(state, goal_task):
             return root_node
 
         if send_update_callback:
@@ -70,7 +70,7 @@ class HTNPlanner:
 
     @trace_function_calls
     def replan_required(self, state, goal_task, task_node):
-        if gpt4_is_goal(state, goal_task):
+        if groq_is_goal(state, goal_task):
             return False
         if task_node is None or task_node.children == []:
             return True
@@ -229,7 +229,7 @@ class HTNPlanner:
         prompt = (f"Given the current state '{state}' and the task '{task}', "
                 f"update the state after executing the task:")
 
-        response = call_openai_api(prompt)
+        response = call_groq_api(prompt)
 
         updated_state = response.choices[0].message.content.strip()
         log_response("execute_task", task)

@@ -6,7 +6,7 @@ from flask_socketio import SocketIO
 from htn_planner import HTNPlanner
 # from search_planner import SearchPlanner
 
-from gpt4_utils import get_initial_task, compress_capabilities
+from LLM_utils import get_initial_task, compress_capabilities
 from text_utils import trace_function_calls
 
 app = Flask(__name__)
@@ -48,41 +48,34 @@ def print_plan(task_node, depth=0):
         print_plan(child, depth + 1)
 
 def main():
-    # Clear the log file at the beginning of each run
-    with open('function_trace.log', 'w') as log_file:
-        log_file.write("")
-
-    initial_state_input = input("Describe the initial state: ")
-    goal_input = input("Describe your goal: ")
-
-    # Set default capabilities
+    initial_state = input("Describe the initial state: ")
+    goal = input("Describe your goal: ")
     default_capabilities = "Manipulation actions (grab, push, pull, ...); Movement actions (move, reach, ...); Kitchen tasks (cook, bake, boil, ...); Cleaning tasks (clean, wipe, vacuum, ...); Miscellaneous tasks (scan, activate, identify, ...)"
     print(f"Default capabilities: {default_capabilities}")
     capabilities_input = input("Describe the capabilities available (press Enter to use default): ")
-
-    # Use default capabilities if the user doesn't provide any input
-    if not capabilities_input.strip():
+    if not capabilities_input:
         capabilities_input = default_capabilities
 
-    goal_task = get_initial_task(goal_input)
     compressed_capabilities = compress_capabilities(capabilities_input)
+    goal_task = get_initial_task(goal)
 
-    print("Using default HTN planner")
+    print("\nUsing default HTN planner")
     print("Starting server...")
 
+    htn_planner = HTNPlanner(goal, initial_state, goal_task, compressed_capabilities, send_update_callback=send_task_node_update)
+    
     server_thread = threading.Thread(target=run_server)
     server_thread.start()
-    print("Starting planning with the initial goal task:", goal_task)
 
-    htn_planner = HTNPlanner(goal_input, initial_state_input, goal_task, compressed_capabilities, 5, send_task_node_update)
     plan = htn_planner.htn_planning()
 
     if plan:
-        print("Plan found:")
-        print_plan(plan)
+        print("\nFinal plan:")
+        plan.print_tree()
     else:
-        print("No plan found.")
+        print("\nNo valid plan found.")
+
+    server_thread.join()
 
 if __name__ == '__main__':
-    # Run the main function
     main()
