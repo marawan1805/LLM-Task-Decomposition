@@ -78,7 +78,7 @@ def main():
 
     if plan:
         print("\nFinal plan:")
-        plan.print_tree()
+        print_plan(plan)
     else:
         print("\nNo valid plan found.")
 

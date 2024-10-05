@@ -33,7 +33,7 @@ def is_task_primitive(task_name):
         'release', 'turn', 'rotate', 'locate', 'identify', 'find', 'pick',
         'place', 'put', 'insert', 'remove', 'open', 'close', 'clean',
         'wipe', 'sweep', 'mop', 'vacuum', 'wash', 'rinse', 'cook', 'heat',
-        'boil', 'fry', 'bake', 'microwave', 'cut', 'slice', 'dice', 'chop',
+        'boil', 'fry', 'bake', 'microwave', 'cut', 'slice', 'dice', 'chop', 'examine',
         'grate', 'peel', 'mix', 'blend', 'stir', 'pour', 'serve', 'stop', 'scan', 'activate'
     ]
 

@@ -67,7 +67,7 @@ function HTNPlanner() {
       <Typography variant="h4" gutterBottom>
         HTN Planner Visualization
       </Typography>
-      <Paper style={{ width: '80%', padding: 20, overflow: 'hidden' }}>
+      <Paper style={{ width: '80%', padding: 20, overflow: 'auto', maxHeight: '80vh' }}>
         {taskNode ? renderTaskNode(taskNode) : <Typography>Waiting for data...</Typography>}
       </Paper>
     </div>
