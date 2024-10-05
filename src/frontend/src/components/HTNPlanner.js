@@ -5,12 +5,10 @@ import { ArrowRight, ExpandLess, ExpandMore } from '@mui/icons-material';
 
 function HTNPlanner() {
   const [taskNode, setTaskNode] = useState(null);
-  const [socket, setSocket] = useState(null);
-  const [expandedNodes, setExpandedNodes] = useState({}); // To handle node expansion
+  const [expandedNodes, setExpandedNodes] = useState({});
 
   useEffect(() => {
     const newSocket = io('http://127.0.0.1:5000');
-    setSocket(newSocket);
 
     newSocket.on('connect', () => {
       console.log('Socket connected');
@@ -19,7 +17,6 @@ function HTNPlanner() {
     newSocket.on('task_node_update', (data) => {
       console.log('Received task_node_update:', data);
       setTaskNode(data);
-      // Expand the root node by default
       setExpandedNodes(prev => ({ ...prev, [data.task_name]: true }));
     });
 
@@ -37,11 +34,11 @@ function HTNPlanner() {
     switch (status) {
       case "completed": return "green";
       case "in-progress": return "blue";
+      case "failed": return "red";
       default: return "grey";
     }
   };
 
-  // Render the task node as a tree
   const renderTaskNode = (node, depth = 0) => {
     if (!node) return null;
 
@@ -52,14 +49,14 @@ function HTNPlanner() {
             <ArrowRight style={{ color: getStatusColor(node.status) }} />
           </ListItemIcon>
           <ListItemText primary={`${node.task_name} (${node.status})`} />
-          {node.children.length > 0 && (
+          {node.children && node.children.length > 0 && (
             <IconButton edge="end" onClick={() => handleToggle(node)}>
               {expandedNodes[node.task_name] ? <ExpandLess /> : <ExpandMore />}
             </IconButton>
           )}
         </ListItem>
         <Collapse in={expandedNodes[node.task_name]} timeout="auto" unmountOnExit>
-          {node.children.map((child, index) => renderTaskNode(child, depth + 1))}
+          {node.children && node.children.map((child, index) => renderTaskNode(child, depth + 1))}
         </Collapse>
       </List>
     );

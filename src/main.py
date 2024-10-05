@@ -10,7 +10,7 @@ from LLM_utils import get_initial_task, compress_capabilities
 from text_utils import trace_function_calls
 
 app = Flask(__name__)
-CORS(app)  # Add this line to enable CORS
+CORS(app)
 socketio = SocketIO(app, cors_allowed_origins="*")
 
 @trace_function_calls
@@ -38,6 +38,13 @@ def send_task_node_update(task_node):
         root_task_node = root_task_node.parent
     task_node_data = task_node_to_dict(root_task_node)
     socketio.emit('task_node_update', task_node_data)
+
+def task_node_to_dict(task_node):
+    return {
+        "task_name": task_node.task_name,
+        "status": task_node.status,
+        "children": [task_node_to_dict(child) for child in task_node.children]
+    }
 
 def run_server():
     socketio.run(app, host="127.0.0.1", debug=True, use_reloader=False, port=5000, allow_unsafe_werkzeug=True, log_output=False)

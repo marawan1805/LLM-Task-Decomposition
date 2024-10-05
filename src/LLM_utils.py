@@ -26,9 +26,8 @@ def get_initial_task(goal):
 @trace_function_calls
 def is_task_primitive(task_name):
     lemmatizer = WordNetLemmatizer()
-    task_name_as_list_of_words = task_name.split()
+    task_words = task_name.lower().split()
     
-    # Refining the list for robot operations
     primitive_actions_keywords = [
         'grab', 'reach', 'twist', 'move', 'push', 'pull', 'lift', 'hold',
         'release', 'turn', 'rotate', 'locate', 'identify', 'find', 'pick',
@@ -38,11 +37,11 @@ def is_task_primitive(task_name):
         'grate', 'peel', 'mix', 'blend', 'stir', 'pour', 'serve', 'stop', 'scan', 'activate'
     ]
 
-    # Lemmatize the words in the task name and check against the keywords
-    for word in task_name_as_list_of_words:
-        if lemmatizer.lemmatize(word.lower()) in primitive_actions_keywords:
+    for word in task_words:
+        lemma = lemmatizer.lemmatize(word)
+        if lemma in primitive_actions_keywords:
             return True
-                
+    
     return False
 
 @trace_function_calls
