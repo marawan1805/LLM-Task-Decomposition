@@ -47,21 +47,22 @@ def check_subtasks(task, subtasks, capabilities_input, task_history):
     response = call_groq_api(prompt, strip=True)
     return response.lower() == 'true'
 
-def get_subtasks(task, state, remaining_decompositions, capabilities_input, task_history):
+def get_subtasks(task, state, remaining_decompositions, capabilities_input, task_history=None):
     prompt = f"""Given the task '{task}', the current state '{state}',
     {remaining_decompositions} decompositions remaining before failing,
     and the following capabilities: '{capabilities_input}',
     decompose the task into a detailed step-by-step plan.
     
-    Consider the following task history to avoid repetition:
-    {', '.join(task_history)}
-    
-    Provide ONLY the subtasks in a comma-separated list,
-    each enclosed in square brackets, without any additional text or explanations.
+    Provide ONLY the subtasks as a Python list of strings, without any additional text or explanations.
     Ensure that the subtasks are not repetitive, provide progress towards the goal,
     and use primitive actions when possible (e.g., move, grab, clean, etc.).
     
-    Example format: [subtask1], [subtask2], [subtask3]"""
+    Example format: ['subtask1', 'subtask2', 'subtask3']"""
 
     response = call_groq_api(prompt, strip=True)
-    return response
+    try:
+        subtasks = eval(response)
+        return subtasks if isinstance(subtasks, list) else []
+    except:
+        print(f"Error parsing subtasks: {response}")
+        return []
