@@ -91,7 +91,6 @@ class HTNPlanner:
         return translated_task
 
 
-    # Add a new function to check if subtasks meet the requirements
     @trace_function_calls
     def check_subtasks(self, task, subtasks, capabilities_input, task_history):
         result = check_subtasks(task, subtasks, capabilities_input, task_history)
@@ -230,7 +229,6 @@ class HTNPlanner:
         return subtasks_list
 
 
-    # Update the execute_task function to log state changes
     @trace_function_calls
     def execute_task(self, state, task):
         prompt = (f"Given the current state '{state}' and the task '{task}', "
